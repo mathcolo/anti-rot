@@ -4,7 +4,7 @@ require 'optparse'
 
 opts = {}
 OptionParser.new do |opt|
-  opt.on('-s', '--store PATH', 'The file path to the JSON that contains, or will contain, your MD5s.') { |o| opts[:store_path] = o }
+  opt.on('-s', '--store PATH', 'The file path to the JSON that contains, or will contain, your hashes.') { |o| opts[:store_path] = o }
   opt.on('-d', '--scan PATH', 'The path to scan for corruption.') { |o| opts[:scan_path] = o }
 end.parse!
 
@@ -39,21 +39,21 @@ size_estimate = 0
 
 files = Dir.glob("#{opts[:scan_path].chomp('/')}/**/*").each do |f|
     next unless File.file? f # Skip directories
-    md5 = Digest::MD5.file f
-    if data.key?(f) && (data[f]['flag'] || md5 != data[f]['md5'])
-        puts "!!!!@@@@ MD5 MISMATCH WARNING: for file '#{f}', known md5 is #{data[f]['md5']} and new md5 is #{md5} @@@@!!!!"
+    sha = Digest::SHA256.file f
+    if data.key?(f) && (data[f]['flag'] || sha != data[f]['sha'])
+        puts "!!!!@@@@ SHA MISMATCH WARNING: for file '#{f}', known SHA256 is #{data[f]['sha']} and new SHA256 is #{sha} @@@@!!!!"
         data[f]['flag'] = true
     else
-        data[f] = { 'md5' => md5, 'flag' => false }
+        data[f] = { 'sha' => sha, 'flag' => false }
     end
 
-    size_estimate += 32 + f.length
+    size_estimate += 64 + f.length
     file_count += 1
     if file_count % 5000 == 0 then puts "Scanned #{file_count} files..." end
 end
 
 puts
-print "Finished filesystem traversal. The md5 store will be at least #{size_estimate} bytes, are you sure you want to write this to disk (y/N)? "
+print "Finished filesystem traversal. The SHA256 store will be at least #{size_estimate} bytes, are you sure you want to write this to disk (y/N)? "
 answer = gets.chomp
 exit(0) unless answer == 'y'
 
