@@ -39,7 +39,7 @@ file_count = 0
 size_estimate = 0
 
 Find.find(opts[:scan_path]) do |f|
-    if File.basename(f) == '@eaDir' || File.basename(f) == '.DS_Store'
+    if File.basename(f) == '@eaDir' || File.basename(f) == '.DS_Store' || File.basename(f) == '.apdisk' || File.basename(f) == '.TemporaryItems'
         Find.prune
     end
     next unless File.file? f # Skip directories
