@@ -1,6 +1,7 @@
 require 'digest'
 require 'json'
 require 'optparse'
+require 'find'
 
 opts = {}
 OptionParser.new do |opt|
@@ -37,9 +38,12 @@ puts
 file_count = 0
 size_estimate = 0
 
-files = Dir.glob("#{opts[:scan_path].chomp('/')}/**/*").each do |f|
+Find.find(opts[:scan_path]) do |f|
+    if File.basename(f) == '@eaDir' || File.basename(f) == '.DS_Store'
+        Find.prune
+    end
     next unless File.file? f # Skip directories
-    sha = Digest::SHA256.file f
+    sha = Digest::SHA256.file(f).hexdigest[0,32] # Truncated sha256
     if data.key?(f) && (data[f]['flag'] || sha != data[f]['sha'])
         puts "!!!!@@@@ SHA MISMATCH WARNING: for file '#{f}', known SHA256 is #{data[f]['sha']} and new SHA256 is #{sha} @@@@!!!!"
         data[f]['flag'] = true
