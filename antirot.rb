@@ -78,7 +78,7 @@ def mode_main(opts)
             Find.prune
         end
         next unless File.file? f # Skip directories
-        sha = Digest::SHA256.file(f).hexdigest[0,32] # Truncated sha256
+        sha = digest_path f # Truncated sha256
         if data.key?(f) && (data[f]['flag'] || sha != data[f]['sha'])
             puts "!!!!@@@@ SHA MISMATCH WARNING: for file '#{f}', known SHA256 is #{data[f]['sha']} and new SHA256 is #{sha} @@@@!!!!"
             data[f]['flag'] = true

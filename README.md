@@ -21,4 +21,6 @@ One notable difference between other tools and this one: AntiRot assumes that a 
 
 The above command will scan /mnt/stuff and build a JSON blob of hashes from every file. It will store that in ```antirot_2019.json```. Subsequent runs of the same command will again scan /mnt/stuff, but compare each hash against what is already stored in the JSON blob.
 
-If there are any mismatches, the tool will yell at you. Note that subsequent runs of the tool will NOT replace the stored SHA256. Currently, after repair, you will need to delete the json file and run antirot.rb over again.
+If there are any mismatches, the tool will yell at you. Subsequent runs of the tool will NOT replace the stored SHA256. After repair of affected files, you'll need to run `antirot.rb` in fix mode and mark each file as resolved, when prompted:
+
+```$ ruby antirot.rb --store antirot_2019.json --mode fix```
