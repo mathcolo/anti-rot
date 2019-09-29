@@ -3,6 +3,13 @@ require 'json'
 require 'optparse'
 require 'find'
 
+FILE_IGNORE_LIST = [
+    '@eaDir',
+    '.DS_Store',
+    '.apdisk',
+    '.TemporaryItems',
+]
+
 opts = {}
 OptionParser.new do |opt|
   opt.on('-s', '--store PATH', 'The file path to the JSON that contains, or will contain, your hashes.') { |o| opts[:store_path] = o }
@@ -39,7 +46,7 @@ file_count = 0
 size_estimate = 0
 
 Find.find(opts[:scan_path]) do |f|
-    if File.basename(f) == '@eaDir' || File.basename(f) == '.DS_Store' || File.basename(f) == '.apdisk' || File.basename(f) == '.TemporaryItems'
+    if FILE_IGNORE_LIST.include? File.basename(f)
         Find.prune
     end
     next unless File.file? f # Skip directories
