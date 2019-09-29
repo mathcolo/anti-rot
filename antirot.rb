@@ -22,7 +22,10 @@ def mode_fix(opts)
         if info['flag'] == true
             print "Is #{key} modification OK? [y/N] "
             answer = gets.chomp
-            info['flag'] = false if answer == 'y'
+            if answer == 'y'
+                info['flag'] = false
+                info['sha'] = digest_path key
+            end
         end
     end
     write_data_out data, opts[:store_path]
@@ -33,6 +36,10 @@ def write_data_out(data, store_path)
     File.open(store_path, "w+") do |f|
         f << data.to_json
     end
+end
+
+def digest_path(path)
+    return Digest::SHA256.file(path).hexdigest[0,32]
 end
 
 
